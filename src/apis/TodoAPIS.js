@@ -40,9 +40,22 @@ export const postTodo = async (todo) => {
 
 }
 
-export const putTodo = async (todo) => {
+export const getTodoSearch = async (keyword, page, size) => {
 
-  const res = await axios.put(`${consts.DOMAIN}/api/todos/`, todo)
+  const res = await axios.get(`${consts.DOMAIN}/api/todos/list`, {
+    params: {
+      ...keyword,
+      page: page,
+      size: size
+    }})
+
+  return res.data
+
+}
+
+export const putTodo = async (todo, page) => {
+
+  const res = await axios.put(`${consts.DOMAIN}/api/todos/list`, {todo})
 
   return res.data
 

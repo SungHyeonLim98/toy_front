@@ -6,6 +6,8 @@
       @moveDetails="moveDetails"
       @moveAdd="moveAdd"
       @movePageNoWatch="movePageNoWatch"
+      @clickSearch="clickSearch"
+      :searchKeyword="searchKeyworda"
       :pNum="pNum"
       :pSize="pSize"
       :key="componentKey"
@@ -21,6 +23,7 @@ import TodoListComponent from "@/components/TodoListComponent.vue";
 import {useRoute, useRouter} from "vue-router";
 import consts from "@/consts/consts";
 import {ref} from "vue";
+import {getTodoSearch} from "@/apis/TodoAPIS";
 
 const router = useRouter()
 
@@ -32,9 +35,9 @@ const pSize = ref(route.query.size || 10)
 
 const componentKey = ref(0)
 
+const searchKeyworda = ref({ keyword: '', condition: 'total' })
+
 const movePageNoWatch = (pageNum) => {
-  pNum.value = pageNum
-  pSize.value = route.query.size
   router.push({ name: "TodoListPage",
     query: {
       page: pageNum,
@@ -48,7 +51,7 @@ const moveDetails = (id) => {
 
   console.log("moveDetails: ", id)
 
-  router.push({name: "DetailsPage", params: {id: id}})
+  router.push({name: "DetailsPage", params: {id: id}, query: {page: pNum.value}})
 }
 
 const moveAdd = () => {
@@ -57,9 +60,34 @@ const moveAdd = () => {
 
 }
 
+const clickSearch = (searchKeyword) => {
+
+  searchKeyworda.value = searchKeyword
+
+  router.push({name: "TodoListPage",
+    query: {
+      ...searchKeyword,
+      page: 1,
+      size: 10
+    }})
+
+  /*const data = await getTodoSearch(searchKeyword.value, pageNum.value, props.pSize)
+
+  console.log(data)
+
+  todoList.value = data.dtoList
+
+  totalPageSize.value = data.end*/
+}
+
+
+
 router.beforeEach((to, from, next)=> {
 
-  pNum.value = to.query.page
+  pSize.value = to.query.size
+  pNum.value = +to.query.page
+
+  console.log(to.query)
 
   componentKey.value++
 

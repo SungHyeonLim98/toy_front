@@ -2,6 +2,23 @@
 
   <h2>Todo List Component</h2>
 
+
+      <v-card>
+        <v-select
+          v-model="searchKeyworda.condition"
+          label="Select"
+          :items="['total', 'title', 'writer']"
+        ></v-select>
+          <v-text-field
+            v-model="searchKeyworda.keyword"
+            label="Search"
+            single-line
+            hide-detail
+          ></v-text-field>
+        <v-btn @click="() => emits('clickSearch', searchKeyword)" location="center" append-icon="mdi-magnify">search</v-btn>
+
+      </v-card>
+
   <div class="container">
     <v-container>
       <v-row>
@@ -28,7 +45,7 @@
   <div>
     <v-pagination
       v-model="pageNum"
-      :length="9"
+      :length="totalPageSize"
       rounded="circle"
       @click="() => emits(`movePageNoWatch`, pageNum)"
     ></v-pagination>
@@ -39,43 +56,42 @@
 <script setup>
 
 
-import {getTodoList, putTodo} from "@/apis/TodoAPIS";
+import {getTodoList, getTodoSearch, putTodo} from "@/apis/TodoAPIS";
 import {onMounted, ref, watch} from "vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
+import {da} from "vuetify/locale";
 
-const router = useRouter()
+const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch', 'clickSearch'])
 
-const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch'])
-
-const props = defineProps(['pNum', 'pSize', 'pageSize'])
+const props = defineProps(['pNum', 'pSize', 'pageSize', 'searchKeyworda'])
 
 const pageNum = ref(1)
 
+const route = useRoute()
+
+//const searchKeyword = ref({ keyword: '', condition: 'total' })
+
+const todoList = ref([])
+
+const totalPageSize = ref()
 
 
-/*
-watch(pageNum,   () => {
-  console.log(pageNum.value)
-
-  emits('pageNum', pageNum.value)
-
-})*/
-let todoList = ref([])
 
 const fetchGetList = async () => {
 
   console.log("pageNum: ", pageNum.value)
 
+  pageNum.value = +props.pNum || 1
 
-  pageNum.value = props.pNum
-
-  const data = await getTodoList(pageNum.value, props.pSize);
+  const data = await getTodoSearch(props.searchKeyworda.keyword, props.searchKeyworda.condition,
+    route.query.page, route.query.size);
 
   console.log(data)
 
 
   todoList.value = data.dtoList
 
+  totalPageSize.value = data.end
 }
 
 onMounted(() => {
@@ -86,14 +102,10 @@ onMounted(() => {
 
 <style scoped>
 
-.container {
 
-
-}
-
-.addBtn {
-
-  --v-layout-left: 50px
+.search {
+  max-width: 50%;
+  display: flex;
 }
 
 </style>

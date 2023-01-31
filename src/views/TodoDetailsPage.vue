@@ -20,15 +20,17 @@ const router = useRouter()
 
 const tid = route.params.id
 
+const pNum = route.query.page
+
 
 const moveModify = (id) => {
 
-  router.push({name: "TodoModifyPage"})
+  router.push({name: "TodoModifyPage", query: {page: pNum}})
 }
 
 const deleteDialog = () => {
 
-  router.push({ name: "TodoListPage" })
+  router.push({ name: "TodoListPage", query: {page: pNum} })
 
 }
 

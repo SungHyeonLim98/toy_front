@@ -17,10 +17,12 @@ import {ref} from "vue";
 const route = useRoute()
 const router = useRouter()
 
+const pNum = route.query.page
+
 const onDialogEvent = () => {
 
   console.log("onDialogEvent")
-  router.push({name: "TodoListPage"})
+  router.push({name: "TodoListPage", query: {page: pNum}})
 }
 
 const tid = route.params.id

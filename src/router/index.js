@@ -11,33 +11,39 @@ const routes = [
 
   },
   {
-    path: '/todos/list',
-    name: "TodoListPage",
-    component: () => import('@/views/TodoListPage.vue'),
+    path: '/todos',
+    children: [
+      {
+        path: 'list',
+        name: "TodoListPage",
+        component: () => import('@/views/TodoListPage.vue'),
 
+      },
+
+      {
+        path: 'details/:id',
+        name: "DetailsPage",
+        component: () => import('@/views/TodoDetailsPage.vue'),
+
+      },
+      {
+        path: 'modify/:id',
+        name: "TodoModifyPage",
+        component: () => import('@/views/TodoModifyPage.vue'),
+
+      },
+      {
+        path: 'add',
+        name: consts.TODO_ADD_PAGE,
+        component: () => import('@/views/TodoAddPage.vue'),
+
+      },
+    ]
   },
   {
     path: '/login',
     name: "LoginPage",
     component: () => import('@/views/LoginPage.vue'),
-
-  },
-  {
-    path: '/todos/details/:id',
-    name: "DetailsPage",
-    component: () => import('@/views/TodoDetailsPage.vue'),
-
-  },
-  {
-    path: '/todos/modify/:id',
-    name: "TodoModifyPage",
-    component: () => import('@/views/TodoModifyPage.vue'),
-
-  },
-  {
-    path: '/todos/add',
-    name: consts.TODO_ADD_PAGE,
-    component: () => import('@/views/TodoAddPage.vue'),
 
   },
 ]

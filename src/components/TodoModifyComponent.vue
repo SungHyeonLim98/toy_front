@@ -59,7 +59,7 @@ const emits = defineEmits(['dialog'])
 
 const dialog = ref(false)
 
-const todo = ref({title: null, writer: null, id: null})
+const todo = ref({title: null, writer: null, tno: null})
 
 watch(dialog,  async () => {
 
@@ -67,6 +67,7 @@ watch(dialog,  async () => {
 
   if(!dialog.value) {
 
+    console.log(todo.value)
     await putTodo(todo.value)
 
     emits('dialog')

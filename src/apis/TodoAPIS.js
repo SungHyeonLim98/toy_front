@@ -1,12 +1,17 @@
 import axios from "axios";
 import consts from "@/consts/consts";
 
-export async function getTodoList(){
 
-  const res = await axios.get(`${consts.DOMAIN}/api/todos/list`)
+export const getTodoList = async (page, size) => {
+
+  const res = await axios.get(`${consts.DOMAIN}/api/todos/list`, {
+    params: {
+      page: page,
+      size: size
+    }
+  })
 
   return res.data
-
 }
 
 export const getTodo = async (id) => {
@@ -37,7 +42,7 @@ export const postTodo = async (todo) => {
 
 export const putTodo = async (todo) => {
 
-  const res = await axios.put(`http://localhost/todos/${todo.id}`, todo)
+  const res = await axios.put(`${consts.DOMAIN}/api/todos/`, todo)
 
   return res.data
 

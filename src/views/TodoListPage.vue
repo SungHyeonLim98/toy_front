@@ -2,12 +2,16 @@
 
   <ListLayout>
 
+
+    <SearchComponent :key="componentKey" @clickSearch="clickSearch" />
+
+
     <TodoListComponent
       @moveDetails="moveDetails"
       @moveAdd="moveAdd"
       @movePageNoWatch="movePageNoWatch"
       @clickSearch="clickSearch"
-      :searchKeyword="searchKeyworda"
+      :searchKeyword="searchKeyword"
       :pNum="pNum"
       :pSize="pSize"
       :key="componentKey"
@@ -24,6 +28,8 @@ import {useRoute, useRouter} from "vue-router";
 import consts from "@/consts/consts";
 import {ref} from "vue";
 import {getTodoSearch} from "@/apis/TodoAPIS";
+import TestComponent from "@/components/TestComponent.vue";
+import SearchComponent from "@/components/SearchComponent.vue";
 
 const router = useRouter()
 
@@ -35,11 +41,15 @@ const pSize = ref(route.query.size || 10)
 
 const componentKey = ref(0)
 
-const searchKeyworda = ref({ keyword: '', condition: 'total' })
+const searchKeyword = ref({condition: 'total', keyword: ''})
+
+console.log("num: ", pNum.value, "psize: ", pSize.value)
 
 const movePageNoWatch = (pageNum) => {
   router.push({ name: "TodoListPage",
     query: {
+      keyword: searchKeyword.value.keyword,
+      condition: searchKeyword.value.condition,
       page: pageNum,
       size: pSize.value
     }
@@ -60,34 +70,34 @@ const moveAdd = () => {
 
 }
 
-const clickSearch = (searchKeyword) => {
+const clickSearch = (value) => {
 
-  searchKeyworda.value = searchKeyword
+  searchKeyword.value = value
+
+  console.log(searchKeyword.value)
 
   router.push({name: "TodoListPage",
     query: {
-      ...searchKeyword,
+      keyword: searchKeyword.value.keyword,
+      condition: searchKeyword.value.condition,
       page: 1,
-      size: 10
+      size: pSize.value
     }})
-
-  /*const data = await getTodoSearch(searchKeyword.value, pageNum.value, props.pSize)
-
-  console.log(data)
-
-  todoList.value = data.dtoList
-
-  totalPageSize.value = data.end*/
 }
 
 
 
-router.beforeEach((to, from, next)=> {
+router.beforeEach((to, from, next) => {
+
+  console.log("this is list page")
+  console.log(to)
+  console.log(from)
 
   pSize.value = to.query.size
-  pNum.value = +to.query.page
+  pNum.value = parseInt(to.query.page || 1)
 
-  console.log(to.query)
+  searchKeyword.value.condition = to.query.condition || ''
+  searchKeyword.value.keyword = to.query.keyword || ''
 
   componentKey.value++
 

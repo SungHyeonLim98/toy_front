@@ -34,8 +34,8 @@
     >
 
       <v-card>
-        <v-card-text>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        <v-card-text style="text-align: center">
+          수정 하시겠습니까?
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
@@ -52,6 +52,9 @@
 
 import {getTodo, putTodo} from "@/apis/TodoAPIS";
 import {onMounted, ref, watch} from "vue";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
 
 const props = defineProps(['tid'])
 
@@ -66,6 +69,7 @@ watch(dialog,  async () => {
   console.log(dialog.value)
 
   if(!dialog.value) {
+
 
     console.log(todo.value)
     await putTodo(todo.value)

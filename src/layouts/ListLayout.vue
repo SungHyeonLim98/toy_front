@@ -13,8 +13,14 @@
 <script>
 
 import AppBarComponent from "@/components/AppBarComponent.vue";
+import SearchComponent from "@/components/SearchComponent.vue";
 
 export default {
+  computed: {
+    SearchComponent() {
+      return SearchComponent
+    }
+  },
   components: {AppBarComponent},
   data: () => ({ drawer: null }),
 }

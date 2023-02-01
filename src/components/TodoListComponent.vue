@@ -3,24 +3,32 @@
   <h2>Todo List Component</h2>
 
 
-      <v-card>
+  <div>
+      <v-card class="container">
         <v-select
-          v-model="searchKeyworda.condition"
-          label="Select"
+          style="max-width: 15%"
+          v-model="selectSearchKeyword.condition"
+          label="검색조건"
           :items="['total', 'title', 'writer']"
         ></v-select>
           <v-text-field
-            v-model="searchKeyworda.keyword"
+            style="max-width: 60%"
+            v-model="selectSearchKeyword.keyword"
             label="Search"
             single-line
             hide-detail
           ></v-text-field>
-        <v-btn @click="() => emits('clickSearch', searchKeyword)" location="center" append-icon="mdi-magnify">search</v-btn>
-
+        <div class="searchBtn">
+        <v-btn
+          @click="() => emits('clickSearch', selectSearchKeyword)"
+          append-icon="mdi-magnify">
+            search
+        </v-btn>
+        </div>
       </v-card>
-
+  </div>
   <div class="container">
-    <v-container>
+    <v-container style="justify-content: center">
       <v-row>
         <v-col
           v-for="todo in todoList"
@@ -35,12 +43,12 @@
         </v-col>
       </v-row>
     </v-container>
-
-
-    <v-btn class="addBtn" fab dark large color="indigo" location="center" @click="() => emits('moveAdd')">
-      <v-icon dark>mdi-plus</v-icon>
-    </v-btn>
   </div>
+
+  <div>
+  <v-btn class="addBtn" fab dark large color="indigo" location="center" @click="() => emits('moveAdd')">
+    <v-icon dark>mdi-plus</v-icon>
+  </v-btn>
 
   <div>
     <v-pagination
@@ -49,6 +57,7 @@
       rounded="circle"
       @click="() => emits(`movePageNoWatch`, pageNum)"
     ></v-pagination>
+  </div>
   </div>
 
 </template>
@@ -63,35 +72,35 @@ import {da} from "vuetify/locale";
 
 const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch', 'clickSearch'])
 
-const props = defineProps(['pNum', 'pSize', 'pageSize', 'searchKeyworda'])
+const props = defineProps(['pNum', 'pSize', 'searchKeyword'])
 
 const pageNum = ref(1)
 
-const route = useRoute()
-
-//const searchKeyword = ref({ keyword: '', condition: 'total' })
+const selectSearchKeyword = ref({ keyword: '', condition: 'total' })
 
 const todoList = ref([])
 
 const totalPageSize = ref()
 
-
+const test = ref({})
 
 const fetchGetList = async () => {
 
-  console.log("pageNum: ", pageNum.value)
+  console.log(props.searchKeyword)
 
-  pageNum.value = +props.pNum || 1
+  selectSearchKeyword.value = props.searchKeyword
 
-  const data = await getTodoSearch(props.searchKeyworda.keyword, props.searchKeyworda.condition,
-    route.query.page, route.query.size);
+  const data = await getTodoSearch(props.searchKeyword, props.pNum, props.pSize);
 
   console.log(data)
 
-
   todoList.value = data.dtoList
 
-  totalPageSize.value = data.end
+  totalPageSize.value = Math.ceil(data.total/9)
+
+  console.log("total: ", totalPageSize.value)
+
+  pageNum.value = +props.pNum || 1
 }
 
 onMounted(() => {
@@ -100,12 +109,19 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
+<style scoped>asx
 
 
 .search {
-  max-width: 50%;
+
+}
+
+.container{
   display: flex;
+  justify-content: center;
+}
+.searchBtn{
+  margin: 10px;
 }
 
 </style>

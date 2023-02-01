@@ -52,6 +52,9 @@
 
 import {getTodo, putTodo} from "@/apis/TodoAPIS";
 import {onMounted, ref, watch} from "vue";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
 
 const props = defineProps(['tid'])
 
@@ -66,6 +69,7 @@ watch(dialog,  async () => {
   console.log(dialog.value)
 
   if(!dialog.value) {
+
 
     console.log(todo.value)
     await putTodo(todo.value)

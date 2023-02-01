@@ -7,7 +7,7 @@
       @moveAdd="moveAdd"
       @movePageNoWatch="movePageNoWatch"
       @clickSearch="clickSearch"
-      :searchKeyword="searchKeyworda"
+      :searchKeyword="searchKeyword"
       :pNum="pNum"
       :pSize="pSize"
       :key="componentKey"
@@ -31,15 +31,17 @@ const route = useRoute()
 
 const pNum = ref(route.query.page || 1)
 
-const pSize = ref(route.query.size || 10)
+const pSize = ref(route.query.size || 9)
 
 const componentKey = ref(0)
 
-const searchKeyworda = ref({ keyword: '', condition: 'total' })
+const searchKeyword = ref({condition: 'total', keyword: ''})
 
 const movePageNoWatch = (pageNum) => {
   router.push({ name: "TodoListPage",
     query: {
+      keyword: searchKeyword.value.keyword,
+      condition: searchKeyword.value.condition,
       page: pageNum,
       size: pSize.value
     }
@@ -60,24 +62,19 @@ const moveAdd = () => {
 
 }
 
-const clickSearch = (searchKeyword) => {
+const clickSearch = (value) => {
 
-  searchKeyworda.value = searchKeyword
+  searchKeyword.value = value
+
+  console.log(searchKeyword.value)
 
   router.push({name: "TodoListPage",
     query: {
-      ...searchKeyword,
+      keyword: searchKeyword.value.keyword,
+      condition: searchKeyword.value.condition,
       page: 1,
-      size: 10
+      size: pSize.value
     }})
-
-  /*const data = await getTodoSearch(searchKeyword.value, pageNum.value, props.pSize)
-
-  console.log(data)
-
-  todoList.value = data.dtoList
-
-  totalPageSize.value = data.end*/
 }
 
 
@@ -86,8 +83,6 @@ router.beforeEach((to, from, next)=> {
 
   pSize.value = to.query.size
   pNum.value = +to.query.page
-
-  console.log(to.query)
 
   componentKey.value++
 

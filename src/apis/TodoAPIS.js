@@ -1,4 +1,5 @@
 import axios from "axios";
+import keywords from "@/consts/keywords";
 import consts from "@/consts/consts";
 
 
@@ -42,9 +43,22 @@ export const postTodo = async (todo) => {
 
 export const getTodoSearch = async (keyword, page, size) => {
 
+
+  console.log("getTodoSearch")
+  const postKeyword = {...keyword}
+
+  if(postKeyword.keyword == ''){
+    postKeyword.condition = ''
+  }
+  else if(postKeyword.condition = "total"){
+    postKeyword.condition = keywords[keyword.condition]
+  }
+
+  console.log(postKeyword)
+
   const res = await axios.get(`${consts.DOMAIN}/api/todos/list`, {
     params: {
-      ...keyword,
+      ...postKeyword,
       page: page,
       size: size
     }})
@@ -53,9 +67,11 @@ export const getTodoSearch = async (keyword, page, size) => {
 
 }
 
-export const putTodo = async (todo, page) => {
+export const putTodo = async (todo) => {
 
-  const res = await axios.put(`${consts.DOMAIN}/api/todos/list`, {todo})
+  console.log(todo)
+
+  const res = await axios.put(`${consts.DOMAIN}/api/todos/`, todo)
 
   return res.data
 

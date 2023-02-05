@@ -28,8 +28,6 @@
 
 <script setup>
 
-console.log("search")
-
 import {ref} from "vue";
 
 const emits = defineEmits(['clickSearch'])

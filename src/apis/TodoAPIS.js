@@ -1,5 +1,4 @@
 import axios from "axios";
-import keywords from "@/consts/keywords";
 import consts from "@/consts/consts";
 
 
@@ -32,48 +31,20 @@ export const deleteTodo = async (id) => {
 
 
 }
-export const postTodo = async (todo, images) => {
+export const postTodo = async (todo) => {
 
-  const result = {...todo, images: images}
-
-  console.log(result)
-
-  const res = await axios.post(`${consts.DOMAIN}/api/todos/`, result)
+  const res = await axios.post(`${consts.DOMAIN}/api/todos/`, todo)
 
   return res.data
 
 
-}
-
-export const postUpload = async (file) => {
-
-  const res = await axios.post(`${consts.DOMAIN}/api/files/upload/`, file, {
-    headers: {
-      'Content-Type' : 'multipart/form-data'
-    }
-  })
-
-  return res.data
 }
 
 export const getTodoSearch = async (keyword, page, size) => {
 
-
-  console.log("getTodoSearch")
-  const postKeyword = {...keyword}
-
-  if(postKeyword.keyword == ''){
-    postKeyword.condition = ''
-  }
-  else if(postKeyword.condition = "total"){
-    postKeyword.condition = keywords[keyword.condition]
-  }
-
-  console.log(postKeyword)
-
   const res = await axios.get(`${consts.DOMAIN}/api/todos/list`, {
     params: {
-      ...postKeyword,
+      ...keyword,
       page: page,
       size: size
     }})
@@ -82,22 +53,11 @@ export const getTodoSearch = async (keyword, page, size) => {
 
 }
 
-export const putTodo = async (todo) => {
+export const putTodo = async (todo, page) => {
 
-  console.log(todo)
-
-  const res = await axios.put(`${consts.DOMAIN}/api/todos/`, todo)
+  const res = await axios.put(`${consts.DOMAIN}/api/todos/list`, {todo})
 
   return res.data
 
 
 }
-
-export const getFile = async (fileName) => {
-
-  const res = await axios.get(`${consts.DOMAIN}/api/files/${fileName}`)
-
-  return res
-
-}
-

@@ -2,16 +2,12 @@
 
   <ListLayout>
 
-
-    <SearchComponent :key="componentKey" @clickSearch="clickSearch" />
-
-
     <TodoListComponent
       @moveDetails="moveDetails"
       @moveAdd="moveAdd"
       @movePageNoWatch="movePageNoWatch"
       @clickSearch="clickSearch"
-      :searchKeyword="searchKeyword"
+      :searchKeyword="searchKeyworda"
       :pNum="pNum"
       :pSize="pSize"
       :key="componentKey"
@@ -28,8 +24,6 @@ import {useRoute, useRouter} from "vue-router";
 import consts from "@/consts/consts";
 import {ref} from "vue";
 import {getTodoSearch} from "@/apis/TodoAPIS";
-import TestComponent from "@/components/TestComponent.vue";
-import SearchComponent from "@/components/SearchComponent.vue";
 
 const router = useRouter()
 
@@ -41,15 +35,11 @@ const pSize = ref(route.query.size || 10)
 
 const componentKey = ref(0)
 
-const searchKeyword = ref({condition: 'total', keyword: ''})
-
-console.log("num: ", pNum.value, "psize: ", pSize.value)
+const searchKeyworda = ref({ keyword: '', condition: 'total' })
 
 const movePageNoWatch = (pageNum) => {
   router.push({ name: "TodoListPage",
     query: {
-      keyword: searchKeyword.value.keyword,
-      condition: searchKeyword.value.condition,
       page: pageNum,
       size: pSize.value
     }
@@ -70,34 +60,34 @@ const moveAdd = () => {
 
 }
 
-const clickSearch = (value) => {
+const clickSearch = (searchKeyword) => {
 
-  searchKeyword.value = value
-
-  console.log(searchKeyword.value)
+  searchKeyworda.value = searchKeyword
 
   router.push({name: "TodoListPage",
     query: {
-      keyword: searchKeyword.value.keyword,
-      condition: searchKeyword.value.condition,
+      ...searchKeyword,
       page: 1,
-      size: pSize.value
+      size: 10
     }})
+
+  /*const data = await getTodoSearch(searchKeyword.value, pageNum.value, props.pSize)
+
+  console.log(data)
+
+  todoList.value = data.dtoList
+
+  totalPageSize.value = data.end*/
 }
 
 
 
-router.beforeEach((to, from, next) => {
-
-  console.log("this is list page")
-  console.log(to)
-  console.log(from)
+router.beforeEach((to, from, next)=> {
 
   pSize.value = to.query.size
-  pNum.value = parseInt(to.query.page || 1)
+  pNum.value = +to.query.page
 
-  searchKeyword.value.condition = to.query.condition || ''
-  searchKeyword.value.keyword = to.query.keyword || ''
+  console.log(to.query)
 
   componentKey.value++
 

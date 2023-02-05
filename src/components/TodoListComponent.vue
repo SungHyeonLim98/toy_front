@@ -1,41 +1,55 @@
 <template>
 
-  <div class="list">
+  <h2>Todo List Component</h2>
 
-      <v-btn
-        elevation="8"
-        class="addBtn" fab color="indigo" @click="() => emits('moveAdd')">
-        <v-icon dark>mdi-plus</v-icon>
-      </v-btn>
 
-    <div class="container">
-      <v-container style="justify-content: center">
-        <v-row>
-          <v-col
-            v-for="todo in todoList"
-            :key="todo.id"
-            cols="4"
-          >
-            <v-card height="200" @click="() => emits('moveDetails', todo.id)">
-              Id: {{ todo.id }} <br>
-              Title: {{ todo.title }} <br>
-              Writer: {{ todo.writer }}
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
+      <v-card>
+        <v-select
+          v-model="searchKeyworda.condition"
+          label="Select"
+          :items="['total', 'title', 'writer']"
+        ></v-select>
+          <v-text-field
+            v-model="searchKeyworda.keyword"
+            label="Search"
+            single-line
+            hide-detail
+          ></v-text-field>
+        <v-btn @click="() => emits('clickSearch', searchKeyword)" location="center" append-icon="mdi-magnify">search</v-btn>
 
+      </v-card>
+
+  <div class="container">
+    <v-container>
+      <v-row>
+        <v-col
+          v-for="todo in todoList"
+          :key="todo.id"
+          cols="4"
+        >
+          <v-card height="200" @click="() => emits('moveDetails', todo.id)">
+            Id: {{todo.id}} <br>
+            Title: {{ todo.title }} <br>
+            Writer: {{todo.writer}}
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+
+    <v-btn class="addBtn" fab dark large color="indigo" location="center" @click="() => emits('moveAdd')">
+      <v-icon dark>mdi-plus</v-icon>
+    </v-btn>
+  </div>
+
+  <div>
     <v-pagination
       v-model="pageNum"
       :length="totalPageSize"
       rounded="circle"
       @click="() => emits(`movePageNoWatch`, pageNum)"
     ></v-pagination>
-
   </div>
-
-
 
 </template>
 
@@ -46,35 +60,38 @@ import {getTodoList, getTodoSearch, putTodo} from "@/apis/TodoAPIS";
 import {onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {da} from "vuetify/locale";
-import SearchComponent from "@/components/SearchComponent.vue";
 
-const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch'])
+const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch', 'clickSearch'])
 
-const props = defineProps(['pNum', 'pSize', 'searchKeyword'])
+const props = defineProps(['pNum', 'pSize', 'pageSize', 'searchKeyworda'])
 
 const pageNum = ref(1)
+
+const route = useRoute()
+
+//const searchKeyword = ref({ keyword: '', condition: 'total' })
 
 const todoList = ref([])
 
 const totalPageSize = ref()
 
+
+
 const fetchGetList = async () => {
 
-  console.log(props.searchKeyword)
+  console.log("pageNum: ", pageNum.value)
 
-  //selectSearchKeyword.value = props.searchKeyword
+  pageNum.value = +props.pNum || 1
 
-  const data = await getTodoSearch(props.searchKeyword, props.pNum, props.pSize);
+  const data = await getTodoSearch(props.searchKeyworda.keyword, props.searchKeyworda.condition,
+    route.query.page, route.query.size);
 
   console.log(data)
 
+
   todoList.value = data.dtoList
 
-  totalPageSize.value = Math.ceil(data.total / 10)
-
-  console.log("total: ", totalPageSize.value)
-
-  pageNum.value = +props.pNum || 1
+  totalPageSize.value = data.end
 }
 
 onMounted(() => {
@@ -83,35 +100,12 @@ onMounted(() => {
 
 </script>
 
-<style scoped>asx
+<style scoped>
+
+
 .search {
-
-}
-
-.container {
+  max-width: 50%;
   display: flex;
-  justify-content: center;
-}
-
-.addBtn {
-  position: fixed;
-
-
-  margin: 20px;
-
-  bottom: 0;
-
-  left: 90%;
-
-  height: 60px;
-  width: 50px;
-
-  font-size: 25px;
-
-  border-radius: 50%;
-
-  z-index: 1;
-
 }
 
 </style>

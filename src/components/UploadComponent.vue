@@ -62,6 +62,8 @@ const clickDialogUpload = async () => {
 
   const res = await postUpload(formData);
 
+  console.log(res)
+
   emits('addImages', res)
 }
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import consts from "@/consts/consts";
+import {tr} from "vuetify/locale";
 
 
 export const getTodoList = async (page, size) => {
@@ -31,20 +32,45 @@ export const deleteTodo = async (id) => {
 
 
 }
-export const postTodo = async (todo) => {
+export const postTodo = async (result) => {
 
-  const res = await axios.post(`${consts.DOMAIN}/api/todos/`, todo)
+  const res = await axios.post(`${consts.DOMAIN}/api/todos/`, result)
 
   return res.data
 
 
 }
 
+export const postUpload = async (files) => {
+
+  const res = await axios.post(`${consts.DOMAIN}/api/files/upload`, files)
+
+  return res.data
+
+
+}
+
+export const deleteTodoImages = async (images) => {
+
+  console.log("result: ", images)
+  const res = await axios.delete(`${consts.DOMAIN}/api/files/delete`, {
+    data: {
+      fnames: images
+    }
+  })
+
+  return res.data;
+
+}
+
 export const getTodoSearch = async (keyword, page, size) => {
+
+  if(keyword.condition == 'total') keyword.condition = 'title,writer'
 
   const res = await axios.get(`${consts.DOMAIN}/api/todos/list`, {
     params: {
-      ...keyword,
+      keyword: keyword.keyword,
+      condition: keyword.condition,
       page: page,
       size: size
     }})

@@ -25,7 +25,9 @@
 
       <ul style="display: flex; list-style: none">
         <li v-for="image in images">
-          <img class="img" :src="'http://192.168.1.153:8080/api/files/' + image">
+          <img class="img"
+               @click="() => clickDeleteImg(image)"
+               :src="'http://192.168.1.153:8080/api/files/' + consts.THUMBNAIL_PREFIX + image">
         </li>
       </ul>
 
@@ -40,7 +42,7 @@
         <v-btn
           color="success"
           class="me-4"
-          @click="clickPostTodo"
+          @click="() => cancelAddTodo(images)"
         >
           취소
         </v-btn>
@@ -75,8 +77,9 @@
 <script setup>
 
 import {ref} from "vue";
-import {postTodo} from "@/apis/TodoAPIS";
+import {deleteTodoImages, postTodo} from "@/apis/TodoAPIS";
 import UploadComponent from "@/components/UploadComponent.vue";
+import consts from "@/consts/consts";
 
 const todo = ref({})
 const emits = defineEmits(['moveTodoList'])
@@ -84,6 +87,14 @@ const emits = defineEmits(['moveTodoList'])
 const images = ref([])
 
 const dialog = ref(false)
+
+const clickDeleteImg = async (img) => {
+
+  await deleteTodoImages([img])
+
+  images.value = images.value.filter(e => e !== img)
+
+}
 
 const addImages = (image) => {
 
@@ -93,7 +104,21 @@ const addImages = (image) => {
 
 const clickPostTodo = async () => {
 
-  await postTodo(todo.value, images.value)
+  const imgInfo = []
+
+  images.value.map(img => {
+    imgInfo.push({
+      fname: img,
+      isMain: false
+    })
+  })
+  imgInfo[0].isMain = true
+
+  console.log(imgInfo)
+
+  const result = {todoDTO: todo.value, fileInfo: imgInfo}
+
+  await postTodo(result)
   emits("moveTodoList")
 
 }
@@ -101,6 +126,13 @@ const clickPostTodo = async () => {
 const clickDialog = () => {
 
   dialog.value = !dialog.value
+}
+
+const cancelAddTodo = async (images) => {
+
+  await deleteTodoImages(images)
+
+  emits('moveTodoList')
 }
 
 
@@ -129,8 +161,8 @@ const clickDialog = () => {
 
 .img {
   margin: 5px;
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
 }
 
 </style>

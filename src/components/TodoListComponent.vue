@@ -1,24 +1,5 @@
 <template>
 
-  <h2>Todo List Component</h2>
-
-
-      <v-card>
-        <v-select
-          v-model="searchKeyworda.condition"
-          label="Select"
-          :items="['total', 'title', 'writer']"
-        ></v-select>
-          <v-text-field
-            v-model="searchKeyworda.keyword"
-            label="Search"
-            single-line
-            hide-detail
-          ></v-text-field>
-        <v-btn @click="() => emits('clickSearch', searchKeyword)" location="center" append-icon="mdi-magnify">search</v-btn>
-
-      </v-card>
-
   <div class="container">
     <v-container>
       <v-row>
@@ -28,27 +9,26 @@
           cols="4"
         >
           <v-card height="200" @click="() => emits('moveDetails', todo.id)">
-            Id: {{todo.id}} <br>
+            Id: {{ todo.id }} <br>
             Title: {{ todo.title }} <br>
-            Writer: {{todo.writer}}
+            Writer: {{ todo.writer }}
           </v-card>
         </v-col>
       </v-row>
     </v-container>
 
+    <div>
+      <v-pagination
+        v-model="pageNum"
+        :length="totalPageSize"
+        rounded="circle"
+        @click="() => emits(`movePageNoWatch`, pageNum)"
+      ></v-pagination>
+    </div>
 
-    <v-btn class="addBtn" fab dark large color="indigo" location="center" @click="() => emits('moveAdd')">
+    <v-btn class="addBtn" fab dark large color="indigo" @click="() => emits('moveAdd')">
       <v-icon dark>mdi-plus</v-icon>
     </v-btn>
-  </div>
-
-  <div>
-    <v-pagination
-      v-model="pageNum"
-      :length="totalPageSize"
-      rounded="circle"
-      @click="() => emits(`movePageNoWatch`, pageNum)"
-    ></v-pagination>
   </div>
 
 </template>
@@ -56,35 +36,26 @@
 <script setup>
 
 
-import {getTodoList, getTodoSearch, putTodo} from "@/apis/TodoAPIS";
-import {onMounted, ref, watch} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import {da} from "vuetify/locale";
+import {getTodoSearch} from "@/apis/TodoAPIS";
+import {onMounted, ref} from "vue";
 
-const emits = defineEmits(['moveDetails', 'moveAdd', 'pageNum', 'movePageNoWatch', 'clickSearch'])
+const emits = defineEmits(['moveDetails', 'movePageNoWatch', 'clickSearch', 'moveAdd'])
 
-const props = defineProps(['pNum', 'pSize', 'pageSize', 'searchKeyworda'])
+const props = defineProps(['pNum', 'pSize', 'pageSize', 'searchKeyword'])
 
 const pageNum = ref(1)
-
-const route = useRoute()
-
-//const searchKeyword = ref({ keyword: '', condition: 'total' })
 
 const todoList = ref([])
 
 const totalPageSize = ref()
 
-
-
 const fetchGetList = async () => {
 
-  console.log("pageNum: ", pageNum.value)
+  console.log("Fetch")
 
-  pageNum.value = +props.pNum || 1
+  pageNum.value = parseInt(props.pNum)
 
-  const data = await getTodoSearch(props.searchKeyworda.keyword, props.searchKeyworda.condition,
-    route.query.page, route.query.size);
+  const data = await getTodoSearch(props.searchKeyword, pageNum.value, props.pSize);
 
   console.log(data)
 
@@ -102,10 +73,20 @@ onMounted(() => {
 
 <style scoped>
 
+.container {
 
-.search {
-  max-width: 50%;
-  display: flex;
+  position: relative;
 }
 
+.addBtn {
+
+  z-index: 1;
+  position: fixed;
+
+  right: 5%;
+  bottom: 10%;
+
+  border-radius: 46%;
+  font-size: 25px;
+}
 </style>

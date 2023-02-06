@@ -8,12 +8,13 @@
 import TodoAddComponent from "@/components/TodoAddComponent.vue";
 import DetailLayout from "@/layouts/DetailLayout.vue";
 import {useRouter} from "vue-router";
+import {deleteTodoImages} from "@/apis/TodoAPIS";
 
 const router = useRouter()
 
-const moveTodoList = () => {
+const moveTodoList = async (images) => {
 
-  router.push({ name: "TodoListPage" })
+  await router.push({name: "TodoListPage"})
 }
 
 
